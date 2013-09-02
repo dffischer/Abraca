@@ -43,7 +43,7 @@ namespace Abraca {
 		private Client client;
 		private MetadataRequestor requestor;
 
-		public FilterModel (Client c, MetadataResolver resolver, owned string[] props)
+		public FilterModel (Client c, MetadataResolver resolver, string[] props)
 		{
 			client = c;
 
@@ -59,7 +59,7 @@ namespace Abraca {
 
 			set_column_types(types);
 
-			dynamic_columns = (owned) props;
+			dynamic_columns = props;
 
 			requestor = resolver.register(on_resolver_complete);
 			requestor.set_attributes(dynamic_columns);

@@ -23,7 +23,7 @@ namespace Abraca {
 	public class FilterView : Abraca.TreeView, IConfigurable {
 		/* field and order used for sorting, see sorting property */
 		public struct Sorting {
-			public unowned string field;
+			public string field;
 			public Gtk.SortType order;
 		}
 
@@ -76,7 +76,6 @@ namespace Abraca {
 			button_press_event.connect(on_button_press_event);
 			row_activated.connect(on_row_activated);
 			key_press_event.connect(on_key_press_event);
-			columns_changed.connect(on_columns_changed);
 
 			notify["sorting"].connect(on_sorting_changed);
 
@@ -374,9 +373,7 @@ namespace Abraca {
 							} else {
 								order = Gtk.SortType.DESCENDING;
 							}
-							/* TODO: This temp variable is needed due to a bug in vala 0.11.5 */
-							Sorting tmp = {column.title, order};
-							sorting = tmp;
+							sorting = { column.title, order };
 							break;
 						}
 					}
