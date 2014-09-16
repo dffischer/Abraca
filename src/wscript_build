@@ -1,3 +1,9 @@
+bld(features = 'authors',
+    authors = '../AUTHORS',
+    template = 'resources/ui/abraca-about.ui.in',
+    target = 'resources/ui/abraca-about.ui'
+)
+
 sources = """
     abraca-application.vala
     abraca-album-view.vala
