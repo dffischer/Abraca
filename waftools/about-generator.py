@@ -10,13 +10,18 @@ Example::
     bld(features = 'authors',
         authors = 'AUTHORS',
         template = 'template.txt.in',
-        target = 'template.txt'
-    )
+        terget = 'template.txt',
+        categories = {
+            "authors": ["architects", "developers"],
+            "artists": "artists"
+    })
 
 This will create a file "template.txt", by copying "template.txt.in", replacing
-all occurrences of "${heading}" with the names found under the correspondingly
-named headline in "AUTHORS".
+all occurrences of "$authors" with the names found under the headlines
+"architects" and "developers" in "AUTHORS" and "$artists" with the names found
+under "artists" therein.
 
+Omitting "categories" maps all variables to headings of the same name,
 "authors" defaults to "AUTHORS", "template" is mandatory, and "target" can be
 left out to be the same as "template" stripped from its ".in" prefix.
 """
@@ -58,16 +63,28 @@ def replace(dict, text):
   regex = compile("|".join(map(escape, dict.keys())))
   return regex.sub(lambda x: dict[x.group(0)], text)
 
+class idict:
+  """Identity dictionary. Returns key as value."""
+  def __getitem__(self, key):
+    return [key]
+  def items(self):
+    return ()
+
 class template(Task):
+  def __init__(self, *k, **kw):
+    super().__init__(*k, **kw)
+    self.categories = getattr(kw['generator'], 'categories', idict())
+
   def run(self):
-    groups = {group[0].replace(' ', '_'): '\n'.join(
-      replace(REPLACEMENTS, person) for person in group[2:]
-    ) for group in (
+    groups = {group[0]: set(group[2:]) for group in (
       list(category) for category in split(
-        self.inputs[0].read().splitlines(),
-        ''))}
+        self.inputs[0].read().splitlines(), ''))}
     self.outputs[0].write(
-      Template(self.inputs[1].read()).safe_substitute(groups))
+      Template(self.inputs[1].read()).safe_substitute({
+        category: '\n'.join(
+          replace(REPLACEMENTS, person) for person in (
+            set.union(*[groups[heading] for heading in headings])))
+        for category, headings in self.categories.items()}))
 
 @feature('authors')
 def authors_template(gen):

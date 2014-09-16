@@ -10,18 +10,15 @@
     <property name="website">http://abraca.github.com/Abraca</property>
 
     <property name="authors">
-      ${Developers}
-      ${Code_Contributions}
-      ${Original_Abraca_design}
+      $authors
     </property>
 
     <property name="translator-credits">
-      ${Translators}
+      $translators
     </property>
 
     <property name="artists">
-      ${Logo}
-      ${Additional_art}
+      $artists
     </property>
 
     <property name="license" translatable="yes">
