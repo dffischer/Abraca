@@ -24,7 +24,7 @@ left out to be the same as "template" stripped from its ".in" prefix.
 from waflib.TaskGen import feature
 from waflib.Task import Task
 from string import Template
-from xml.sax.saxutils import escape
+from re import compile, escape
 
 class split:
   """
@@ -46,10 +46,22 @@ class split:
       yield self.current
       self._step()
 
+REPLACEMENTS = {
+    '<': '&lt;',
+    '>': '&gt;',
+    ' at ': '@',
+    ' dot ': '.'
+}
+
+def replace(dict, text):
+  """Replaces every dict key with its value."""
+  regex = compile("|".join(map(escape, dict.keys())))
+  return regex.sub(lambda x: dict[x.group(0)], text)
+
 class template(Task):
   def run(self):
     groups = {group[0].replace(' ', '_'): '\n'.join(
-      escape(person) for person in group[2:]
+      replace(REPLACEMENTS, person) for person in group[2:]
     ) for group in (
       list(category) for category in split(
         self.inputs[0].read().splitlines(),
