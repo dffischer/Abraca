@@ -1,7 +1,6 @@
 bld(features = 'authors',
     authors = '../AUTHORS',
-    template = 'resources/ui/abraca-about.ui.in',
-    target = 'resources/ui/abraca-about.ui'
+    template = 'resources/ui/abraca-about.ui.in'
 )
 
 sources = """

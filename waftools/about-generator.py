@@ -16,6 +16,9 @@ Example::
 This will create a file "template.txt", by copying "template.txt.in", replacing
 all occurrences of "${heading}" with the names found under the correspondingly
 named headline in "AUTHORS".
+
+"authors" defaults to "AUTHORS", "template" is mandatory, and "target" can be
+left out to be the same as "template" stripped from its ".in" prefix.
 """
 
 from waflib.TaskGen import feature
@@ -57,6 +60,10 @@ class template(Task):
 @feature('authors')
 def authors_template(gen):
   path = gen.path
-  gen.create_task('template',
-      [path.find_node(gen.authors), path.find_node(gen.template)],
-      path.find_node(gen.authors))
+  template = path.find_node(gen.template)
+  authors = path.find_node(getattr(gen, 'authors', 'AUTHORS'))
+  if gen.target == '':
+    target = template.change_ext('', ext_in='.in')
+  else:
+    target = path.find_or_declare(gen.target)
+  gen.create_task('template', [authors, template], target)
