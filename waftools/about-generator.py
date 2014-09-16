@@ -70,6 +70,14 @@ class idict:
   def items(self):
     return ()
 
+def lastname(name):
+  """Extracts the authors last name, or whatever comes before the email address."""
+  name = name.split()
+  try:
+    return name[-2]
+  except IndexError:
+    return name[0]
+
 class template(Task):
   def __init__(self, *k, **kw):
     super().__init__(*k, **kw)
@@ -82,8 +90,10 @@ class template(Task):
     self.outputs[0].write(
       Template(self.inputs[1].read()).safe_substitute({
         category: '\n'.join(
-          replace(REPLACEMENTS, person) for person in (
-            set.union(*[groups[heading] for heading in headings])))
+          sorted(
+            (replace(REPLACEMENTS, person) for person in (
+              set.union(*[groups[heading] for heading in headings]))),
+            key=lastname))
         for category, headings in self.categories.items()}))
 
 @feature('authors')
