@@ -30,6 +30,8 @@ from waflib.TaskGen import feature
 from waflib.Task import Task
 from string import Template
 from re import compile, escape
+from pickle import dumps
+from operator import itemgetter
 
 class split:
   """
@@ -95,6 +97,13 @@ class template(Task):
               set.union(*[groups[heading] for heading in headings]))),
             key=lastname))
         for category, headings in self.categories.items()}))
+
+  def sig_vars(self):
+    super().sig_vars()
+    for k, v in sorted(self.categories.items(), key=itemgetter(0)):
+      self.m.update(dumps(k))
+      for e in v:
+        self.m.update(dumps(e))
 
 @feature('authors')
 def authors_template(gen):
