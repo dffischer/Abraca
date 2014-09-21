@@ -48,6 +48,7 @@ class split:
   def __next__(self):
     self._step()
     return self._subiter()
+  next = __next__
   def _subiter(self):
     while self.current != self.separator:
       yield self.current
@@ -82,7 +83,7 @@ def lastname(name):
 
 class template(Task):
   def __init__(self, *k, **kw):
-    super().__init__(*k, **kw)
+    super(template, self).__init__(*k, **kw)
     self.categories = getattr(kw['generator'], 'categories', idict())
 
   def run(self):
@@ -99,7 +100,7 @@ class template(Task):
         for category, headings in self.categories.items()}))
 
   def sig_vars(self):
-    super().sig_vars()
+    super(template, self).sig_vars()
     for k, v in sorted(self.categories.items(), key=itemgetter(0)):
       self.m.update(dumps(k))
       for e in v:
